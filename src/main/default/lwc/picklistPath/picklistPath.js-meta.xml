@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata" fqn="orderStatusPath">
+    <apiVersion>46.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Picklist Path</masterLabel>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property name="fieldNameParam" type="String" label="Qualified Field Name" description="Qualified field name of the picklist field. Eg: Account.Type" required="true"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
