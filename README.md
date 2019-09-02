@@ -32,4 +32,4 @@ sfdx force:org:open
 ## Configuration
 1. Edit a record page with the **Lighning App Builder**
 1. Place the **Picklist Path** component on the page.
-2. Set the **Qualified Field Name** parameter to one of the object picklist field. The field name must be qualified (eg: `Account.Type`).
+2. Set the **Qualified Field Name** parameter to one of the object picklist field. The field name must be qualified (eg: `Account.Type` or `Dummy__c.Stage__c`).
