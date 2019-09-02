@@ -119,7 +119,7 @@ export default class Path extends LightningElement {
             return;
         }
 
-        let isCompleted = this.currentValue !== undefined;
+        let isCompleted = this.currentValue !== undefined && this.currentValue !== null;
         this.items = this.pickListValues.map(plValue => {
             const isCurrent =
                 this.currentValue && plValue.value === this.currentValue;
