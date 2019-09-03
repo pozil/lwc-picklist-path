@@ -33,4 +33,9 @@ sfdx force:org:open
 ## Configuration
 1. Edit a record page with the **Lighning App Builder**
 1. Place the **Picklist Path** component on the page.
-2. Set the **Qualified Field Name** parameter to one of the object picklist field. The field name must be qualified (eg: `Account.Type` or `Dummy__c.Stage__c`).
+2. Set the **Qualified Field Name** parameter to one of the object picklist field. The field name must be qualified (eg: `Account.Rating` or `Dummy__c.Stage__c`).
+
+<img src="screenshots/lightning-app-builder.png" alt="Lightning App Builder configuration">
+<br/>
+<br/>
+<img src="screenshots/runtime.png" alt="Component at runtime">

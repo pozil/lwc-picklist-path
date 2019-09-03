@@ -26,7 +26,7 @@ export default class Path extends LightningElement {
     }
     set fieldNameParam(value) {
         if (value.indexOf('.') === -1) {
-            throw new Error('Picklist field name parameter is not fully qualified (eg: Account.Type).');
+            throw new Error('Picklist field name parameter is not fully qualified (eg: Account.Rating).');
         }
         this.qualifiedFieldName = value;
         this.fieldNames = [ value ];
