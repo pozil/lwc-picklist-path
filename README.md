@@ -1,8 +1,9 @@
 # A LWC path component that works with any picklist field
 
+**/!\ DO NOT use this component in production, prefer the [standard built-in Path feature](https://help.salesforce.com/articleView?id=path_overview.htm&type=5). This is just sample code for demonstration/learning purposes.**
 
 ## Install
-If you are on MacOS or Linxu, run
+If you are on MacOS or Linux, run
 
 ```
 sh install.dev
