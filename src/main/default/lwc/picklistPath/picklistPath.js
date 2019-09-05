@@ -17,7 +17,7 @@ export default class Path extends LightningElement {
     @track items = [];
 
     pickListValues;
-
+    defaultRecordTypeId;
 
     // App Builder parameter for qualified field name
     // We use a getter/setter because we need to save the value twice:
@@ -29,18 +29,17 @@ export default class Path extends LightningElement {
     }
     set fieldNameParam(value) {
         if (value.indexOf('.') === -1) {
-            throw new Error('Picklist field name parameter is not fully qualified (eg: Account.Rating).');
+            throw new Error('Picklist field name must be qualified (eg: Account.Rating).');
         }
         this.qualifiedFieldName = value;
         this.fieldNames = [ value ];
     }
 
-
-    // Extract record type id from object api name
+    // Extract default record type id from object api name
     @wire(getObjectInfo, { objectApiName: '$objectApiName' })
-    getObjectInfo({ error, data }) {
+    getObjectInfo({ error, data }) {        
         if (data) {
-            this.recordTypeId = data.defaultRecordTypeId;
+            this.defaultRecordTypeId = data.defaultRecordTypeId;
         } else if (error) {
             const message = 'Failed to retrieve object info';
             console.error(message, JSON.stringify(error));
@@ -68,6 +67,13 @@ export default class Path extends LightningElement {
     @wire(getRecord, { recordId: '$recordId', fields: '$fieldNames' })
     getRecord({ error, data }) {
         if (data) {
+            // Check if object has record info attached to it or use default
+            if (data.recordTypeInfo) {
+                this.recordTypeId = data.recordTypeInfo.recordTypeId;
+            } else {
+                this.recordTypeId = this.defaultRecordTypeId;
+            }
+            // Get current picklist value
             const fieldName = this.getFieldName();
             this.currentValue = data.fields[fieldName].value;
             this.refreshPathItems();
@@ -88,13 +94,15 @@ export default class Path extends LightningElement {
             return;
         }
 
-        // Update record with new value
+        // Prepare updated record fields
         const fieldName = this.getFieldName();
-        const recordInput = {
+        const fields = {
             Id: this.recordId
         };
-        recordInput[fieldName] = value;
-        updateRecord({ recordInput })
+        fields[fieldName] = value;
+        const recordInput = { fields };
+        // Update record
+        updateRecord(recordInput)
             .then(() => {
                 this.dispatchEvent(
                     new ShowToastEvent({
@@ -105,10 +113,12 @@ export default class Path extends LightningElement {
                 );
             })
             .catch(error => {
+                const message = error.body ? error.body.message : error;
+                console.error(error);
                 this.dispatchEvent(
                     new ShowToastEvent({
                         title: 'Error updating record',
-                        message: error.body.message,
+                        message,
                         variant: 'error'
                     })
                 );
