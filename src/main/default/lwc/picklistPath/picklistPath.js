@@ -56,13 +56,16 @@ export default class Path extends LightningElement {
     }
 
     // Extract current picklist value for this record
-    @wire(getRecord, { recordId: '$recordId', fields: '$fieldNames' })
+    @wire(getRecord, {
+        recordId: '$recordId',
+        fields: '$fieldNames'
+    })
     getRecord({ error, data }) {
         if (data) {
-            // Check if object has record info attached to it or use default
+            // Check if record data includes record type
             if (data.recordTypeInfo) {
                 this.recordTypeId = data.recordTypeInfo.recordTypeId;
-            } else {
+            } else { // Used default record type
                 this.recordTypeId = this.objectInfo.data.defaultRecordTypeId;
             }
             // Get current picklist value
