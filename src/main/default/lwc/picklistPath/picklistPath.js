@@ -20,6 +20,9 @@ export default class Path extends LightningElement {
 
 
     // App Builder parameter for qualified field name
+    // We use a getter/setter because we need to save the value twice:
+    // - as a string for calling getObjectInfo wire
+    // - as an array for calling getRecord wire
     @api
     get fieldNameParam() {
         return this.qualifiedFieldName;
