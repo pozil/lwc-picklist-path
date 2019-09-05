@@ -35,19 +35,11 @@ export default class Path extends LightningElement {
         this.fieldNames = [ value ];
     }
 
-    // Extract default record type id from object api name
+    // Extract object information including default record type id
     @wire(getObjectInfo, { objectApiName: '$objectApiName' })
-    getObjectInfo({ error, data }) {        
-        if (data) {
-            this.defaultRecordTypeId = data.defaultRecordTypeId;
-        } else if (error) {
-            const message = 'Failed to retrieve object info';
-            console.error(message, JSON.stringify(error));
-            throw new Error(message);
-        }
-    }
+    objectInfo;
 
-    // Extract picklist values from object type id and field name
+    // Extract picklist values
     @wire(getPicklistValues, {
         recordTypeId: '$recordTypeId',
         fieldApiName: '$qualifiedFieldName'
@@ -71,7 +63,7 @@ export default class Path extends LightningElement {
             if (data.recordTypeInfo) {
                 this.recordTypeId = data.recordTypeInfo.recordTypeId;
             } else {
-                this.recordTypeId = this.defaultRecordTypeId;
+                this.recordTypeId = this.objectInfo.data.defaultRecordTypeId;
             }
             // Get current picklist value
             const fieldName = this.getFieldName();
