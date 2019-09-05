@@ -16,7 +16,7 @@ export default class Path extends LightningElement {
     @track currentValue;
     @track items = [];
 
-    pickListValues;
+    picklistValues;
     defaultRecordTypeId;
 
     // App Builder parameter for qualified field name
@@ -46,7 +46,7 @@ export default class Path extends LightningElement {
     })
     getPicklistValues({ error, data }) {
         if (data) {
-            this.pickListValues = data.values;
+            this.picklistValues = data.values;
             this.refreshPathItems();
         } else if (error) {
             const message = 'Failed to retrieve picklist values';
@@ -65,7 +65,7 @@ export default class Path extends LightningElement {
             // Check if record data includes record type
             if (data.recordTypeInfo) {
                 this.recordTypeId = data.recordTypeInfo.recordTypeId;
-            } else { // Used default record type
+            } else { // Use default record type
                 this.recordTypeId = this.objectInfo.data.defaultRecordTypeId;
             }
             // Get current picklist value
@@ -122,13 +122,13 @@ export default class Path extends LightningElement {
 
     refreshPathItems() {
         // Do nothing if we still haven't retrieved possible picklist values
-        if (!this.pickListValues) {
+        if (!this.picklistValues) {
             this.items = [];
             return;
         }
 
         let isCompleted = this.currentValue !== undefined && this.currentValue !== null;
-        this.items = this.pickListValues.map(plValue => {
+        this.items = this.picklistValues.map(plValue => {
             const isCurrent =
                 this.currentValue && plValue.value === this.currentValue;
             if (isCurrent) {
