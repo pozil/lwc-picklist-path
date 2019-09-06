@@ -9,31 +9,17 @@ export default class Path extends LightningElement {
     @api recordId;
     @api objectApiName;
 
-    @track recordTypeId;
-    @track qualifiedFieldName;
-    @track fieldNames = [];
+    // App Builder parameter for qualified field name
+    @api qualifiedFieldName;
 
+    @track recordTypeId;
     @track currentValue;
     @track items = [];
+    @track errorMessage;
 
     picklistValues;
     defaultRecordTypeId;
 
-    // App Builder parameter for qualified field name
-    // We use a getter/setter because we need to save the value twice:
-    // - as a string for calling getObjectInfo wire
-    // - as an array for calling getRecord wire
-    @api
-    get fieldNameParam() {
-        return this.qualifiedFieldName;
-    }
-    set fieldNameParam(value) {
-        if (value.indexOf('.') === -1) {
-            throw new Error('Picklist field name must be qualified (eg: Account.Rating).');
-        }
-        this.qualifiedFieldName = value;
-        this.fieldNames = [ value ];
-    }
 
     // Extract object information including default record type id
     @wire(getObjectInfo, { objectApiName: '$objectApiName' })
@@ -49,16 +35,16 @@ export default class Path extends LightningElement {
             this.picklistValues = data.values;
             this.refreshPathItems();
         } else if (error) {
-            const message = 'Failed to retrieve picklist values';
+            const message = `Failed to retrieve picklist values. ${this.reduceErrors(error)}`;
             console.error(message, JSON.stringify(error));
-            throw new Error(message);
+            this.errorMessage = message;
         }
     }
 
     // Extract current picklist value for this record
     @wire(getRecord, {
         recordId: '$recordId',
-        fields: '$fieldNames'
+        fields: '$qualifiedFieldName'
     })
     getRecord({ error, data }) {
         if (data) {
@@ -73,9 +59,9 @@ export default class Path extends LightningElement {
             this.currentValue = data.fields[fieldName].value;
             this.refreshPathItems();
         } else if (error) {
-            const message = 'Failed to retrieve record data';
+            const message = `Failed to retrieve record data. ${this.reduceErrors(error)}`;
             console.error(message, JSON.stringify(error));
-            throw new Error(message);
+            this.errorMessage = message;
         }
     }
 
@@ -108,7 +94,7 @@ export default class Path extends LightningElement {
                 );
             })
             .catch(error => {
-                const message = error.body ? error.body.message : error;
+                const message = this.reduceErrors(error);
                 console.error(error);
                 this.dispatchEvent(
                     new ShowToastEvent({
@@ -160,5 +146,38 @@ export default class Path extends LightningElement {
             cssClasses += ' slds-is-incomplete';
         }
         return cssClasses;
+    }
+
+    reduceErrors(errors) {
+        if (!Array.isArray(errors)) {
+            errors = [errors];
+        }
+    
+        return (
+            errors
+                // Remove null/undefined items
+                .filter(error => !!error)
+                // Extract an error message
+                .map(error => {
+                    // UI API read errors
+                    if (Array.isArray(error.body)) {
+                        return error.body.map(e => e.message);
+                    }
+                    // UI API DML, Apex and network errors
+                    else if (error.body && typeof error.body.message === 'string') {
+                        return error.body.message;
+                    }
+                    // JS errors
+                    else if (typeof error.message === 'string') {
+                        return error.message;
+                    }
+                    // Unknown error shape so try HTTP status text
+                    return error.statusText;
+                })
+                // Flatten
+                .reduce((prev, curr) => prev.concat(curr), [])
+                // Remove empty strings
+                .filter(message => !!message)
+        );
     }
 }
