@@ -17,19 +17,19 @@
                                             role="listbox"
                                             aria-orientation="horizontal"
                                         >
-                                            <template for:each={items} for:item="item">
+                                            <template for:each={pathItems} for:item="pathItem">
                                                 <li
-                                                    key={item.value}
-                                                    class={item.cssClasses}
+                                                    key={pathItem.value}
+                                                    class={pathItem.cssClasses}
                                                     role="presentation"
                                                 >
                                                     <a
-                                                        aria-selected={item.isCurrent}
+                                                        aria-selected={pathItem.isCurrent}
                                                         class="slds-path__link"
                                                         href="#"
                                                         onclick={handlePathItemClick}
                                                         role="option"
-                                                        data-value={item.value}
+                                                        data-value={pathItem.value}
                                                         tabindex="0"
                                                     >
                                                         <span class="slds-path__stage">
@@ -47,7 +47,7 @@
                                                             >
                                                         </span>
                                                         <span class="slds-path__title"
-                                                            >{item.label}</span
+                                                            >{pathItem.label}</span
                                                         >
                                                     </a>
                                                 </li>

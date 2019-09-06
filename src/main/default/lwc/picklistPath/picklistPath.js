@@ -6,6 +6,7 @@ import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
 
 
 export default class Path extends LightningElement {
+    // Page context
     @api recordId;
     @api objectApiName;
 
@@ -13,8 +14,8 @@ export default class Path extends LightningElement {
     @api qualifiedFieldName;
 
     @track recordTypeId;
-    @track currentValue;
-    @track items = [];
+    @track picklistValue;
+    @track pathItems = [];
     @track errorMessage;
 
     picklistValues;
@@ -56,7 +57,7 @@ export default class Path extends LightningElement {
             }
             // Get current picklist value
             const fieldName = this.getFieldName();
-            this.currentValue = data.fields[fieldName].value;
+            this.picklistValue = data.fields[fieldName].value;
             this.refreshPathItems();
         } else if (error) {
             const message = `Failed to retrieve record data. ${this.reduceErrors(error)}`;
@@ -71,7 +72,7 @@ export default class Path extends LightningElement {
 
         // Ignore clicks on curent value
         const { value } = event.currentTarget.dataset;
-        if (value === this.currentValue) {
+        if (value === this.picklistValue) {
             return;
         }
 
@@ -109,14 +110,14 @@ export default class Path extends LightningElement {
     refreshPathItems() {
         // Do nothing if we still haven't retrieved possible picklist values
         if (!this.picklistValues) {
-            this.items = [];
+            this.pathItems = [];
             return;
         }
 
-        let isCompleted = this.currentValue !== undefined && this.currentValue !== null;
-        this.items = this.picklistValues.map(plValue => {
+        let isCompleted = this.picklistValue !== undefined && this.picklistValue !== null;
+        this.pathItems = this.picklistValues.map(plValue => {
             const isCurrent =
-                this.currentValue && plValue.value === this.currentValue;
+                this.picklistValue && plValue.value === this.picklistValue;
             if (isCurrent) {
                 isCompleted = false;
             }
